@@ -1,0 +1,341 @@
+-- ===================================================
+-- ✅ USERS & AUTHENTICATION
+-- ===================================================
+CREATE TABLE users (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id VARCHAR(50) ,
+    employee_name VARCHAR(255), -- Added for easy identification
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_active BIT DEFAULT 1,
+   created_at DATETIME DEFAULT GETDATE(), -- Use DATETIME
+    updated_at DATETIME DEFAULT GETDATE() -- Use DATETIME
+);
+
+CREATE TABLE roles (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    role_name VARCHAR(100) UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE user_roles (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id VARCHAR(50) ,
+    user_email VARCHAR(255), -- Added for easy identification
+    role_id VARCHAR(50),
+    role_name VARCHAR(100), -- Added for easy identification
+    assigned_at DATETIME DEFAULT GETDATE(),
+    
+);
+
+CREATE TABLE permissions (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    permission_name VARCHAR(255) UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE role_permissions (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    role_id VARCHAR(50) ,
+    role_name VARCHAR(100), -- Added for easy identification
+    permission_id VARCHAR(50),
+    permission_name VARCHAR(255), -- Added for easy identification
+    assigned_at DATETIME DEFAULT GETDATE(),
+    
+);
+
+CREATE TABLE password_resets (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id VARCHAR(50) ,
+    reset_token TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+-- ===================================================
+-- ✅ EMPLOYEE MANAGEMENT
+-- ===================================================
+CREATE TABLE employees (
+    id VARCHAR(50) PRIMARY KEY,
+    staff_id_no VARCHAR(50) UNIQUE NOT NULL,
+    title VARCHAR(20),
+    surname VARCHAR(100) NOT NULL,
+    other_names VARCHAR(255),
+    address TEXT,
+    state VARCHAR(100),
+    country VARCHAR(100),
+    sex VARCHAR(10) ,
+    birth_date DATE,
+    marital_status VARCHAR(50),
+    state_origin VARCHAR(100),
+    national_id_no VARCHAR(50) ,
+    acct_no1 VARCHAR(50),
+    acct_name1 VARCHAR(255),
+    acct_no2 VARCHAR(50),
+    acct_name2 VARCHAR(255),
+    branch_id VARCHAR(50),
+    branch VARCHAR(100),
+    dept_id VARCHAR(50)  ,
+    dept VARCHAR(100),
+    unit_id VARCHAR(50),
+    unit VARCHAR(100),
+    grade_id VARCHAR(50),
+    grade VARCHAR(100),
+    hire_date DATE,
+    telephone VARCHAR(20),
+    mobile_phone VARCHAR(20),
+    email VARCHAR(255)  NOT NULL,
+    email2 VARCHAR(255),
+    next_kin VARCHAR(255),
+    kin_address TEXT,
+    kin_phone VARCHAR(20),
+    kin_relationship VARCHAR(100),
+    height DECIMAL(5,2),
+    weight DECIMAL(5,2),
+    smoker BIT DEFAULT 0,
+    disable_type VARCHAR(255),
+    remarks TEXT,
+    tag VARCHAR(100),
+    photo TEXT,
+    pay_first_month BIT DEFAULT 1,
+    sheet_id2 VARCHAR(50),
+    confirm_status BIT DEFAULT 0,
+    confirm_duration INT,
+    confirmation_date DATE,
+    retired_date DATE,
+    deleted BIT DEFAULT 0,
+    active BIT DEFAULT 1,
+    submit_by VARCHAR(50),
+    submit_on DATETIME DEFAULT GETDATE(),
+    modified_by VARCHAR(50),
+    modified_on DATETIME,
+    hmo_name VARCHAR(255),
+    hmo_id VARCHAR(50),
+    created_at DATETIME DEFAULT GETDATE()
+);
+CREATE TABLE departments (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    department_name VARCHAR(100) UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE employment_types (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    type_name VARCHAR(50) UNIQUE NOT NULL  -- ('Full-Time', 'Part-Time', 'Contract', 'Intern')
+);
+
+-- ===================================================
+-- ✅ LEAVE MANAGEMENT
+-- ===================================================
+CREATE TABLE leave_requests (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id VARCHAR(50) ,
+    employee_name VARCHAR(255), -- Added for easy identification
+    leave_type VARCHAR(50) ,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status VARCHAR(50) CHECK (status IN ('Pending', 'Approved', 'Rejected')),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
+CREATE TABLE leave_history (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    leave_request_id VARCHAR(50) ,
+    employee_id VARCHAR(50),
+    employee_name VARCHAR(255),
+    leave_type VARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),
+    change_DATETIME DATETIME DEFAULT GETDATE()
+);
+
+-- ===================================================
+-- ✅ PAYROLL & COMPENSATION (with history tracking)
+-- ===================================================
+CREATE TABLE payroll (
+   id VARCHAR(50) PRIMARY KEY,
+    employee_id VARCHAR(50) ,
+    employee_name VARCHAR(255), -- For easy identification
+    basic_salary DECIMAL(10,2) NOT NULL, 
+    tax_rate DECIMAL(5,2) DEFAULT 0.00, -- % tax deducted from salary
+    pension_rate DECIMAL(5,2) DEFAULT 0.00, -- % pension deduction
+    health_insurance DECIMAL(10,2) DEFAULT 0.00, -- Fixed health insurance deduction
+    loan_deduction DECIMAL(10,2) DEFAULT 0.00, -- Loan repayment per month
+    other_deductions DECIMAL(10,2) DEFAULT 0.00, 
+    allowances DECIMAL(10,2) DEFAULT 0.00, -- General allowances (e.g. transport, housing)
+    overtime_rate DECIMAL(10,2) DEFAULT 0.00, -- Hourly overtime pay
+    bonus DECIMAL(10,2) DEFAULT 0.00, -- Performance bonus
+    payment_method VARCHAR(50) ,
+    account_number VARCHAR(50),
+    bank_name VARCHAR(100),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE payroll_history (
+
+    id VARCHAR(50) PRIMARY KEY,
+    employee_id VARCHAR(50),
+    employee_name VARCHAR(255),
+    month_year DATE NOT NULL, -- Payroll period
+    basic_salary DECIMAL(10,2) NOT NULL,
+    total_allowances DECIMAL(10,2) NOT NULL, 
+    total_overtime DECIMAL(10,2) DEFAULT 0.00, 
+    total_bonus DECIMAL(10,2) DEFAULT 0.00, 
+    tax_deducted DECIMAL(10,2) NOT NULL,
+    pension_deducted DECIMAL(10,2) NOT NULL,
+    health_insurance DECIMAL(10,2) NOT NULL,
+    loan_repayment DECIMAL(10,2) NOT NULL,
+    other_deductions DECIMAL(10,2) DEFAULT 0.00,
+    gross_salary DECIMAL(10,2) NOT NULL, -- Basic Salary + Allowances + Overtime + Bonus
+    total_deductions DECIMAL(10,2) NOT NULL, -- Sum of all deductions
+    net_salary DECIMAL(10,2) NOT NULL, -- Gross Salary - Total Deductions
+    payment_status VARCHAR(50) CHECK (payment_status IN ('Pending', 'Paid', 'Failed')) DEFAULT 'Pending',
+    paid_on DATETIME NULL, -- Updated when payment is made
+    processed_by VARCHAR(50), -- Admin user who processed payroll
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
+
+CREATE TABLE payroll_allowances (
+       id VARCHAR(50) PRIMARY KEY,
+    employee_id VARCHAR(50),
+    employee_name VARCHAR(255),
+    allowance_type VARCHAR(100) ,  
+    amount DECIMAL(10,2) NOT NULL,  
+    description TEXT,  
+    granted_by VARCHAR(50), -- Admin or manager who approved  
+    granted_on DATE NOT NULL,  
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
+
+CREATE TABLE payroll_deductions (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    payroll_id INT,
+    deduction_type VARCHAR(100) ,
+    amount DECIMAL(10,2) NOT NULL
+);
+CREATE TABLE payroll_payments (
+    id VARCHAR(50) PRIMARY KEY,
+    payroll_id VARCHAR(50) ,
+    employee_id VARCHAR(50) ,
+    employee_name VARCHAR(255),
+    payment_method VARCHAR(50) CHECK (payment_method IN ('Bank Transfer', 'Cash', 'Cheque')),
+    payment_status VARCHAR(50) CHECK (payment_status IN ('Success', 'Failed', 'Pending')),
+    transaction_id VARCHAR(100) UNIQUE,  
+    payment_date DATETIME DEFAULT GETDATE(),  
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
+
+
+-- ===================================================
+-- ✅ DOCUMENT MANAGEMENT
+-- ===================================================
+CREATE TABLE documents (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id VARCHAR(50),
+    employee_name VARCHAR(255),
+    document_type VARCHAR(255),
+    file_url TEXT NOT NULL,
+    uploaded_at DATETIME DEFAULT GETDATE()
+);
+
+-- ===================================================
+-- ✅ PERFORMANCE REVIEW HISTORY
+-- ===================================================
+CREATE TABLE performance_reviews (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id VARCHAR(50) ,
+    employee_name VARCHAR(255), -- Added for easy identification
+    reviewer_id VARCHAR(50) ,
+    reviewer_name VARCHAR(255), -- Added for easy identification
+    review_period DATE NOT NULL,
+    performance_score DECIMAL(5,2),
+    feedback TEXT,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE performance_review_history (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    performance_review_id VARCHAR(50) ,
+    employee_id VARCHAR(50),
+    employee_name VARCHAR(255),
+    reviewer_id VARCHAR(50),
+    reviewer_name VARCHAR(255),
+    review_period DATE,
+    performance_score DECIMAL(5,2),
+    feedback TEXT,
+    change_DATETIME DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE announcements (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    title VARCHAR(255),
+    message TEXT NOT NULL,
+    posted_by VARCHAR(100),
+    posted_at DATETIME DEFAULT GETDATE()
+);
+
+-- ===================================================
+-- ✅ JOB APPLICATION HISTORY
+-- ===================================================
+CREATE TABLE job_postings (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    department_id INT ,
+    department_name VARCHAR(100), -- Redundant for easy access
+    description TEXT,
+    requirements TEXT,
+    status VARCHAR(50), -- Redundant for easy access
+    posted_at DATETIME DEFAULT GETDATE()
+);
+
+
+CREATE TABLE job_applications (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    job_title VARCHAR(100), -- Redundant for easy access
+    applicant_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    resume_url TEXT,
+    status VARCHAR(50), -- Redundant for easy access
+    applied_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE job_application_history (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    job_application_id VARCHAR(50),
+    candidate_name VARCHAR(255),
+    position_applied VARCHAR(255),
+    status VARCHAR(50),
+    change_DATETIME DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE audit_log (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id VARCHAR(50) ,
+    user_email VARCHAR(255), -- Added for easy identification
+    action VARCHAR(255) NOT NULL,
+    details TEXT,
+    ip_address VARCHAR(45),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE pay_audit_log (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT, -- Who made the change?
+    user_name VARCHAR(100),
+    action VARCHAR(255), -- Example: "Updated Employee Salary", "Deleted Leave Request"
+    table_name VARCHAR(100), -- Which table was affected?
+    record_id INT, -- Which record was changed?
+    old_data NVARCHAR(MAX), -- Stores the old values (before change)
+    new_data NVARCHAR(MAX), -- Stores the new values (after change)
+    DATETIME DATETIME DEFAULT GETDATE()
+);
+

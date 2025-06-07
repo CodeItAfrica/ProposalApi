@@ -1,0 +1,22 @@
+﻿TODOS
+
+1 map risk dtos to policydetails
+2 verify policy create
+3 verify debit note create
+4 verify reciept create
+5 @@   generate policy number code
+
+6 make enums LossType, CustomerType
+
+7 @@  customerId generation
+8 policy documents upload
+9 @@  roles
+10 create new claim
+11 @@   create new policy
+12 encrypt passwords
+
+
+
+
+
+
