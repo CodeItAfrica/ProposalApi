@@ -77,15 +77,37 @@ namespace GibsLifesMicroWebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            // configure strongly typed settings objects
             var section = Configuration.GetSection("AppSettings");
             var settings = section.Get<Settings>();
             services.Configure<Settings>(section);
             services.AddHttpContextAccessor();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", builder =>
+                {
+                    builder
+                        .WithOrigins(
+                            "http://localhost:5173",
+                            "http://localhost:5174",
+                            "https://localhost:5173",
+                            "https://localhost:5174"
+                        )
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
 
             services.AddControllers().AddJsonOptions(options =>
             {
@@ -95,29 +117,19 @@ namespace GibsLifesMicroWebApi
             services.AddDbContext<DataContext>(options =>
             {
                 options
-                    //.UseLazyLoadingProxies()
                     .UseSqlServer(settings.SqldbConnString);
             });
 
             services.AddControllers(options =>
             {
-                //options.ModelBinderProviders.Insert(0, new EnumBinderProvider());
             })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new EnumStringConverter());
             });
 
-            //TODO add custom validationResult
-            //services.Configure<ApiBehaviorOptions>(options =>
-            //{
-            //    options.InvalidModelStateResponseFactory = actionContext =>
-            //        new ValidationFailedResult(actionContext.ModelState);
-            //});
-
             services.AddSwaggerGen(s =>
             {
-                // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
@@ -125,9 +137,6 @@ namespace GibsLifesMicroWebApi
                 s.CustomOperationIds(e =>
                 {
                     return e.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
-
-                    //var controllerAction = (ControllerActionDescriptor)e.ActionDescriptor;
-                    //return controllerAction.ActionName;
                 });
 
                 s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -154,7 +163,6 @@ namespace GibsLifesMicroWebApi
                           Scheme = "oauth2",
                           Name = "Bearer",
                           In = ParameterLocation.Header,
-
                         },
                         new List<string>()
                       }
@@ -185,7 +193,6 @@ namespace GibsLifesMicroWebApi
             services.AddHttpContextAccessor();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -199,8 +206,8 @@ namespace GibsLifesMicroWebApi
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
                 RequestPath = "/uploads"
             });
+            
             app.UseSwagger();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "GibsLifesMicroWebApi V1");
@@ -209,9 +216,12 @@ namespace GibsLifesMicroWebApi
 
             app.UseRouting();
 
+            app.UseCors("AllowSpecificOrigins"); 
+
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCorsMiddleware();
+            
+            // app.UseCorsMiddleware(); 
 
             app.UseEndpoints(endpoints =>
             {
