@@ -16,19 +16,19 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         public async Task<List<policydto>> GetIndividualPolicies(string agentId)
         {
             return await _db.PolicyMaster
-                .Where(p => p.AgentCode == agentId) // Filter policies by authenticated agent
+                .Where(p => p.Agentcode == agentId) // Filter policies by authenticated agent
                 .Select(p => new policydto
                 {
                     PolicyNo = p.PolicyNo,
                     ProposalNo = p.ProposalNo,
                     FullName = p.FullName,
                     CoverType = p.Covertype,
-                    AgentCode = p.AgentCode,
+                    AgentCode = p.Agentcode,
                     AgentDescription = p.AgentDescription,
                     StartDate = p.StartDate,
                     MaturityDate = p.MaturityDate,
-                    SumAssured = p.SumAssured,
-                    BasicPremium = p.BasicPremium,
+                    SumAssured = (decimal)p.SumAssured,
+                    BasicPremium = (decimal)p.BasicPremium,
                     Status = p.TransSTATUS, // Mapping TransSTATUS as Status
                     MobilePhone = p.MobilePhone,
                     Email = p.Email
@@ -120,15 +120,15 @@ namespace GibsLifesMicroWebApi.Data.Repositories
                 CoverCode = subRisk.SubRiskID,
                 Covertype = subRisk.SubRiskName,
                 AssuredCode = insured.InsuredID,
-                SurName = insured.Surname,
+                SurName = insured.SurName,
                 OtherNames = insured.OtherNames,
                 Address = insured.Address,
                 FullName = insured.FullName,
-                Landphone = insured.LandPhone,
+                Landphone = insured.Landphone,
                 MobilePhone = insured.MobilePhone,
                 Email = insured.Email,
                 Occupation = insured.Occupation,
-                AgentCode = agents.AgentID,
+                Agentcode = agents.AgentID,
                 AgentDescription = agents.Agent,
                 StartDate = NormalizeDate(policiesDto.StartDate),
                 MaturityDate = NormalizeDate(policiesDto.MaturityDate),
@@ -160,7 +160,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
                 BizOption = "",
                 SerialNo = "",
                 MembersNo = "",
-                Surname = insured.Surname,
+                Surname = insured.SurName,
                 OtherNames = insured.FullName + " " + insured.OtherNames,
                 Address = insured.Address,
                 DOBDate = null,
@@ -248,12 +248,12 @@ namespace GibsLifesMicroWebApi.Data.Repositories
 
                 InsStateID = null,
                 InsuredID = insured.InsuredID,
-                InsSurname = insured.Surname,
+                InsSurname = insured.SurName,
                 InsFirstname = insured.FullName,
                 InsOthernames = insured.OtherNames,
                 InsAddress = insured.Address,
                 InsMobilePhone = insured.MobilePhone,
-                InsLandPhone = insured.LandPhone,
+                InsLandPhone = insured.Landphone,
                 InsEmail = insured.Email,
                 InsOccupation = insured.Occupation,
                 InsFaxNo = "0" /*insured.ApiId*/,
@@ -333,7 +333,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
                 BizOption = "",
                 SerialNo = "",
                 MembersNo = "",
-                Surname = insured.Surname,
+                Surname = insured.SurName,
                 OtherNames = insured.FullName + " " + insured.OtherNames,
                 Address = insured.Address,
                 DOBDate = null,

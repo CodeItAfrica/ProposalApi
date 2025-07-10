@@ -13,6 +13,10 @@ namespace GibsLifesMicroWebApi
             "http://localhost:5174",
             "https://localhost:5173",
             "https://localhost:5174",
+            "http://portalife.newgibsonline.com",
+            "https://portalife.newgibsonline.com",
+            "https://portaltestlife.newgibsonline.com",
+            "http://portaltestlife.newgibsonline.com",
         };
 
         public CorsMiddleware(RequestDelegate next)

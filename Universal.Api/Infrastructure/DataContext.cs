@@ -74,10 +74,16 @@ namespace GibsLifesMicroWebApi.Data
         public DbSet<PolicyDetail> PolicyDetails { get; set; }
         public DbSet<GrpMember> GrpMembers { get; set; }
 
-        public DbSet<InsuredClient> InsuredClients { get; set; }
+        public DbSet<InsuredClients> InsuredClients { get; set; }
         public DbSet<PolicyMaster> PolicyMaster { get; set; }
         public DbSet<Agents> Agents { get; set; }
-        public  DbSet<AgentAttachment> AgentAttachments { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<ProductSettings> ProductSettings { get; set; }
+        public DbSet<QuotesMaster> QuotesMaster { get; set; }
+        public DbSet<InterestRate> InterestRate { get; set; }
+        public DbSet<AttachDoc> AttachDocs { get; set; }
+
+        public DbSet<AgentAttachment> AgentAttachments { get; set; }
 
 
     }

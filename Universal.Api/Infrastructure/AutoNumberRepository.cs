@@ -84,7 +84,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
             }
         }
 
-        private long GetNextSerialNo(string numType, string branchID, string riskID = "")
+        public long GetNextSerialNo(string numType, string branchID, string riskID = "")
         {
             static long ResultOf(List<AutoNumber> list, long errorValue)
             {

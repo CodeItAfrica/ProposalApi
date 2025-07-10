@@ -36,6 +36,33 @@ namespace GibsLifesMicroWebApi.Data.Repositories
                               .FirstOrDefaultAsync();
         }
 
+        public async Task UpdateAgentAsync(Agents agent, UpdateAgentRequest dto)
+        {
+            agent.UnitID = dto.UnitID ?? agent.UnitID;
+            agent.Agent = dto.Agent ?? agent.Agent;
+            agent.Address = dto.Address ?? agent.Address;
+            agent.Area = dto.Area ?? agent.Area;
+            agent.City = dto.City ?? agent.City;
+            agent.State = dto.State ?? agent.State;
+            agent.Phone1 = dto.Phone1 ?? agent.Phone1;
+            agent.Phone2 = dto.Phone2 ?? agent.Phone2;
+            agent.FaxNo = dto.FaxNo ?? agent.FaxNo;
+            agent.Email = dto.Email ?? agent.Email;
+            agent.InsPerson = dto.InsPerson ?? agent.InsPerson;
+            agent.FinPerson = dto.FinPerson ?? agent.FinPerson;
+            agent.Balance = dto.Balance ?? agent.Balance;
+            agent.CreditLimit = dto.CreditLimit ?? agent.CreditLimit;
+            agent.ComRate = dto.ComRate ?? agent.ComRate;
+            agent.Remark = dto.Remark ?? agent.Remark;
+            agent.Accountno = dto.AccountNo ?? agent.Accountno;
+            agent.Bankname = dto.Bankname ?? agent.Bankname;
+            agent.Tag = dto.Tag ?? agent.Tag;
+            agent.Passwords = dto.Passwords ?? agent.Passwords;
+            agent.IsVerified = dto.IsVerified ?? agent.IsVerified;
+
+            agent.ModifiedOn = DateTime.Now;
+        }
+
 
         public async Task<VerificationResult> VerifyAgentAsync(AgentVerificationRequest request)
         {
@@ -67,7 +94,12 @@ namespace GibsLifesMicroWebApi.Data.Repositories
 
             return new VerificationResult { Success = true, Message = "Agent verification updated successfully." };
         }
-
+        public async Task<List<Unit>> GetUnitsAsync()
+        {
+            return await _db.Units
+               
+                .ToListAsync();
+        }
         public async Task SendEmail(string toEmail, string subject, string body)
         {
             var smtpHost = _config["Smtp:Host"];
@@ -83,7 +115,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(smtpUser, "Goxi Insurance"),  // Replace with your name
+                    From = new MailAddress(smtpUser, "Intteck Global Systems"),  // Replace with your name
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true
@@ -132,81 +164,111 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         }
 
 
-        public async Task<Agents> AgentCreateAsync(CreateNewAgentRequest dto)
+        //public async Task<Agents> AgentCreateAsync(CreateNewAgentRequest dto)
+        //{
+        //    //string appId = _authContext.User.AppId;
+
+        //    //check for duplicate
+        //    var existing = await _db.Agents.Where(x =>/* x.ApiId.Contains(dto.Email) ||*/
+        //                                                x.Email == dto.Email ||
+        //                                                x.Phone1 == dto.Phone1)
+        //                                    //.Where(x => x.SubmittedBy == $"{SUBMITTED_BY}/{appId}")
+        //                                    .FirstOrDefaultAsync();
+        //    if (existing != null)
+        //        throw new ArgumentException($"Duplicate agent found. ID={existing.AgentID} {existing.Email}, {existing.Phone1}");
+
+        //    var agent = new Agents()
+        //    {
+        //        AgentID = GetNextAutoNumber("AGENTS","01"),
+
+        //         UnitID= dto.      UnitID,
+        //         Agent = dto.       Agent,      
+        //         Address= dto.     Address,    
+        //         Area= dto.        Area,       
+        //         City= dto.        City,       
+        //         State= dto.       State,      
+        //         Phone1= dto.      Phone1,     
+        //         Phone2= dto.      Phone2,     
+        //         FaxNo= dto.       FaxNo,      
+        //         Email= dto.       Email,      
+        //         InsPerson= dto.   InsPerson,  
+        //         FinPerson= dto.   FinPerson,  
+        //         Balance= dto.     Balance,    
+        //         CreditLimit= dto. CreditLimit,
+        //         ComRate= dto.     ComRate,    
+        //         Remark= dto.      Remark,     
+        //         AccountNo= dto.   AccountNo,  
+        //         Bankname= dto.    Bankname,   
+        //         Tag= dto.         Tag,        
+        //         Deleted= 0,    
+        //         Passwords= dto.Password,
+        //         SubmittedBy= dto.Agent,
+        //        SubmittedOn = DateTime.Now,
+        //         ModifiedBy= dto.Agent,
+        //        ModifiedOn = DateTime.Now,
+
+        //    };
+
+        //    _db.Agents.Add(agent);
+
+        //    if (dto.Attachments != null && dto.Attachments.Any())
+        //    {
+        //        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+        //        Directory.CreateDirectory(uploadsFolder);
+
+        //        foreach (var file in dto.Attachments)
+        //        {
+        //            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+        //            var filePath = Path.Combine(uploadsFolder, fileName);
+
+        //            using (var stream = new FileStream(filePath, FileMode.Create))
+        //            {
+        //                await file.CopyToAsync(stream);
+        //            }
+
+        //            var attachment = new AgentAttachment
+        //            {
+        //                AgentId = agent.AgentID,
+        //                FileName = file.FileName,
+        //                FilePath = $"/uploads/{fileName}",
+        //                UploadedAt = DateTime.UtcNow
+        //            };
+
+        //            _db.AgentAttachments.Add(attachment);
+        //        }
+        //    }
+        //        return agent;
+        //}
+
+        public async Task<string> CreateAgentWithDocumentsAsync(Agents agent, IEnumerable<AttachDoc> documents)
         {
-            //string appId = _authContext.User.AppId;
+            var strategy = _db.Database.CreateExecutionStrategy();
 
-            //check for duplicate
-            var existing = await _db.Agents.Where(x =>/* x.ApiId.Contains(dto.Email) ||*/
-                                                        x.Email == dto.Email ||
-                                                        x.Phone1 == dto.Phone1)
-                                            //.Where(x => x.SubmittedBy == $"{SUBMITTED_BY}/{appId}")
-                                            .FirstOrDefaultAsync();
-            if (existing != null)
-                throw new ArgumentException($"Duplicate agent found. ID={existing.AgentID} {existing.Email}, {existing.Phone1}");
+            string agentId = null;
 
-            var agent = new Agents()
+            await strategy.ExecuteAsync(async () =>
             {
-                AgentID = GetNextAutoNumber("AGENTS","01"),
+                await using var transaction = await _db.Database.BeginTransactionAsync();
 
-                 UnitID= dto.      UnitID,
-                 Agent = dto.       Agent,      
-                 Address= dto.     Address,    
-                 Area= dto.        Area,       
-                 City= dto.        City,       
-                 State= dto.       State,      
-                 Phone1= dto.      Phone1,     
-                 Phone2= dto.      Phone2,     
-                 FaxNo= dto.       FaxNo,      
-                 Email= dto.       Email,      
-                 InsPerson= dto.   InsPerson,  
-                 FinPerson= dto.   FinPerson,  
-                 Balance= dto.     Balance,    
-                 CreditLimit= dto. CreditLimit,
-                 ComRate= dto.     ComRate,    
-                 Remark= dto.      Remark,     
-                 AccountNo= dto.   AccountNo,  
-                 Bankname= dto.    Bankname,   
-                 Tag= dto.         Tag,        
-                 Deleted= 0,    
-                 Passwords= dto.Password,
-                 SubmittedBy= dto.Agent,
-                SubmittedOn = DateTime.Now,
-                 ModifiedBy= dto.Agent,
-                ModifiedOn = DateTime.Now,
+                _db.Agents.Add(agent);
+                await _db.SaveChangesAsync();
 
-            };
+                agentId = agent.AgentID;
 
-            _db.Agents.Add(agent);
-
-            if (dto.Attachments != null && dto.Attachments.Any())
-            {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-                Directory.CreateDirectory(uploadsFolder);
-
-                foreach (var file in dto.Attachments)
+                foreach (var doc in documents)
                 {
-                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-
-                    var attachment = new AgentAttachment
-                    {
-                        AgentId = agent.AgentID,
-                        FileName = file.FileName,
-                        FilePath = $"/uploads/{fileName}",
-                        UploadedAt = DateTime.UtcNow
-                    };
-
-                    _db.AgentAttachments.Add(attachment);
+                    doc.DocNo = agent.AgentID;
                 }
-            }
-                return agent;
+
+                _db.AttachDocs.AddRange(documents);
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            });
+
+            return agentId;
         }
+
 
         public async Task<Agents?> AgentDeleteAsync(string agentId)
         {

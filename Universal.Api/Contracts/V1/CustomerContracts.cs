@@ -100,7 +100,7 @@ namespace GibsLifesMicroWebApi.Contracts.V1
 
     public class CustomerResult : CreateNewCustomerRequest
     {
-        public CustomerResult(Models.InsuredClient client)
+        public CustomerResult(Models.InsuredClients client)
         {
             CustomerID = client.InsuredID;
             IsOrg = client.Occupation == "CORPORATE";
@@ -114,11 +114,11 @@ namespace GibsLifesMicroWebApi.Contracts.V1
 
             CustomerID = client.InsuredID;
             FirstName = client.FullName;
-            LastName = client.Surname;
+            LastName = client.SurName;
             OtherName = client.OtherNames;
             Email = client.Email;
             Address = client.Address;
-            PhoneLine2 = client.LandPhone;
+            PhoneLine2 = client.Landphone;
             PhoneLine1 = client.MobilePhone;
 
             //IsCorporate = false;

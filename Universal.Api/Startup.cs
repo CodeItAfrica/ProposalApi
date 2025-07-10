@@ -93,7 +93,11 @@ namespace GibsLifesMicroWebApi
                             "http://localhost:5173",
                             "http://localhost:5174",
                             "https://localhost:5173",
-                            "https://localhost:5174"
+                            "https://localhost:5174",
+                            "http://portalife.newgibsonline.com",
+                            "https://portalife.newgibsonline.com",
+                            "https://portaltestlife.newgibsonline.com",
+                            "http://portaltestlife.newgibsonline.com"
                         )
                         .AllowAnyMethod()
                         .AllowAnyHeader()
@@ -116,8 +120,10 @@ namespace GibsLifesMicroWebApi
 
             services.AddDbContext<DataContext>(options =>
             {
-                options
-                    .UseSqlServer(settings.SqldbConnString);
+                options.UseSqlServer(settings.SqldbConnString, sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure();
+                });
             });
 
             services.AddControllers(options =>
