@@ -64,6 +64,7 @@ namespace GibsLifesMicroWebApi.Models
         public string? ContactPhone { get; set; }
         public string? ContactEmail { get; set; }
         public string? ContactJob { get; set; }
+        public string? CustomerType { get; set; }
         public string   MeansID { get; set; }
         public string? IDNo { get; set; }
         public string? ChronicIllness { get; set; }
@@ -85,7 +86,7 @@ namespace GibsLifesMicroWebApi.Models
         public int TotalCount { get; set; }
     }
 
-    public class ProposalRequest
+    public class            ProposalRequest
     {
         //public string? PolicyNo { get; set; }
         //public string? ProposalNo { get; set; }
@@ -115,6 +116,7 @@ namespace GibsLifesMicroWebApi.Models
         public string? Country { get; set; }
         public string? AgentCode { get; set; }
         public string? AgentDescription { get; set; }
+        public string? RiskID { get; set; }
 
         public string? ContactName { get; set; }
         public string? ContactAddress { get; set; }
@@ -142,6 +144,8 @@ namespace GibsLifesMicroWebApi.Models
         public string? MobilePhone { get; set; }
         public string? Email { get; set; }
         //public string? NationalID { get; set; }
+        public string? RiskID { get; set; }
+
         public string? Occupation { get; set; }
         public string? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }

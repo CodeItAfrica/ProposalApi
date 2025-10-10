@@ -153,6 +153,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         Occupation = request.Occupation,
         Sex = request.Gender,
         MaritalStatus = request.MaritalStatus,
+
         Country = request.Country,
         DateofBirth = request.DateOfBirth,
         Age = request.DateOfBirth.HasValue
@@ -214,6 +215,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         TransGUID = Guid.NewGuid().ToString(),
         ContactName = request.ContactName,
         ContactAddress = request.ContactAddress,
+        CustomerType = request.RiskID,
         ContactPhone = request.ContactPhone,
         ContactEmail = request.ContactEmail,
         ContactJob = request.ContactJob,
@@ -360,6 +362,7 @@ namespace GibsLifesMicroWebApi.Data.Repositories
                 AgentDescription = request.AgentDescription,
                 DateofBirth = request.DateOfBirth,
                 StartDate = DateTime.Today,
+                CustomerType = request.RiskID,
                 MaturityDate = DateTime.Today.AddYears(request.Duration),
                 Duration = request.Duration,
                 Age = insured.Age,

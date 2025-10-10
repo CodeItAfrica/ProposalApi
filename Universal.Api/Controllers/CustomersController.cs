@@ -10,7 +10,6 @@ using GibsLifesMicroWebApi.Data;
 
 namespace GibsLifesMicroWebApi.Controllers
 {
-    [Authorize(Roles = "AGENT")]
     public class CustomersController : SecureControllerBase
     {
         private readonly Settings _settings;

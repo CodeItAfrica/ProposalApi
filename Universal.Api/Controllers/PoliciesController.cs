@@ -17,9 +17,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GibsLifesMicroWebApi.Contracts.V1
 {
-#if !DEBUG
-    //[Microsoft.AspNetCore.Authorization.Authorize(Roles = "APP,AGENT,CUST")]
-#endif
 
     public class PoliciesController : SecureControllerBase
     {

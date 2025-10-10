@@ -7,7 +7,6 @@ using GibsLifesMicroWebApi.Data;
 
 namespace GibsLifesMicroWebApi.Controllers
 {
-    [Authorize(Roles = "APP,AGENT")]
     public class PaymentsController : SecureControllerBase
     {
         public PaymentsController(Repository repository, AuthContext authContext) : base(repository, authContext)

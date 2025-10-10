@@ -10,7 +10,6 @@ using GibsLifesMicroWebApi.Data;
 
 namespace GibsLifesMicroWebApi.Controllers
 {
-    [Authorize(Roles = "APP,AGENT,CUST")]
     public class DocumentsController : SecureControllerBase
     {
         public DocumentsController(Repository repository, AuthContext authContext) : base(repository, authContext)

@@ -86,7 +86,9 @@ namespace GibsLifesMicroWebApi.Controllers
         [HttpPut("proposal/{proposalNo}")]
         public async Task<IActionResult> EditProposal(string proposalNo, [FromBody] ProposalRequest request)
         {
-            if (string.IsNullOrEmpty(proposalNo))
+            try
+            { 
+                if (string.IsNullOrEmpty(proposalNo))
                 return BadRequest("Proposal number is required.");
 
             if (request == null)
@@ -150,7 +152,11 @@ namespace GibsLifesMicroWebApi.Controllers
             {
                 message = "Proposal updated successfully",
                 recalculated = calculation
-            });
+            }); }
+              catch (Exception ex)
+            {
+                return ExceptionResult(ex);
+            }
         }
 
         [HttpGet("{proposalNo}")]
@@ -170,6 +176,7 @@ namespace GibsLifesMicroWebApi.Controllers
         [HttpPost("tradproposal/create")]
         public async Task<IActionResult> CreateTradProposal([FromBody] TradProposalRequest request)
         {
+            try { 
             var calculation = await _repository.CalculateTraditionalAsync(request);
 
             return Ok(new
@@ -177,6 +184,12 @@ namespace GibsLifesMicroWebApi.Controllers
                 message = "Traditional Proposal created successfully.",
                 calculation
             });
+        }
+
+                        catch (Exception ex)
+            {
+                return ExceptionResult(ex);
+            }
         }
 
         [HttpPut("tradproposal/edit/{proposalNo}")]

@@ -1,23 +1,29 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
+﻿using GibsLifesMicroWebApi.Data;
+using GibsLifesMicroWebApi.Data.Repositories;
+using GibsLifesMicroWebApi.Others;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using GibsLifesMicroWebApi.Data;
-using GibsLifesMicroWebApi.Data.Repositories;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.FileProviders;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GibsLifesMicroWebApi
 {
@@ -92,12 +98,20 @@ namespace GibsLifesMicroWebApi
                         .WithOrigins(
                             "http://localhost:5173",
                             "http://localhost:5174",
+                            "http://localhost:3000",
+                            "https://localhost:3000",
                             "https://localhost:5173",
                             "https://localhost:5174",
                             "http://portalife.newgibsonline.com",
                             "https://portalife.newgibsonline.com",
-                            "https://portaltestlife.newgibsonline.com",
-                            "http://portaltestlife.newgibsonline.com"
+                            "http://corelifeapp.newgibsonline.com",
+                            "https://corelifeapp.newgibsonline.com  ",
+                            "http://172.18.32.1:5173",
+                            "https://partners.goximicroinsurance.com",
+                            "http://192.168.56.1:5173",
+                            "http://192.168.186.1:5173",
+                            "http://192.168.11.1:5173",
+                            "http://192.168.242.199:5173"
                         )
                         .AllowAnyMethod()
                         .AllowAnyHeader()
@@ -193,6 +207,13 @@ namespace GibsLifesMicroWebApi
                 };
             });
 
+
+            // ADD THESE TWO LINES HERE:
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+
+            services.AddAuthorization(); // no need to register policies manually
+
             services.AddScoped<AuthContext>();
             services.AddScoped<Repository>();
             services.AddSingleton(settings);
@@ -226,13 +247,42 @@ namespace GibsLifesMicroWebApi
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+            // Run startup tasks
+            RunStartupTasks(app.ApplicationServices).GetAwaiter().GetResult();
+
             // app.UseCorsMiddleware(); 
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+        }
+        private static async Task RunStartupTasks(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.GetService<IServiceScopeFactory>()!.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var policyProvider = scope.ServiceProvider.GetRequiredService<IAuthorizationPolicyProvider>() as PermissionPolicyProvider;
+            var authOptions = scope.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
+
+            // Register all permissions dynamically as policies
+            var permissions = await db.Permissions.AsNoTracking().ToListAsync();
+
+            foreach (var permission in permissions)
+            {
+                if (!authOptions.GetPolicy(permission.PermissionName)?.Requirements.Any() ?? true)
+                {
+                    authOptions.AddPolicy(permission.PermissionName, policy =>
+                        policy.Requirements.Add(new PermissionRequirement(permission.PermissionName)));
+                }
+
+            }
+
+            //// Existing product cache setup
+            //var fields = await db.ProductFields.AsNoTracking().ToListAsync();
+            //Domain.Entities.Product.SetFieldsCache(fields);
+
+            //var rates = await db.CommissionRates.AsNoTracking().ToListAsync();
+            //Domain.Entities.Product.SetRatesCache(rates);
         }
     }
 }

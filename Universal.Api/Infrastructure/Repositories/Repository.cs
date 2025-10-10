@@ -35,9 +35,9 @@ namespace GibsLifesMicroWebApi.Data.Repositories
 
         
 
-        public async Task<ApiUser> AppLogin(string username, string password)
+        public async Task<User> AppLogin(string username, string password)
         {
-            var user = await _db.OpenApiUsers.FirstOrDefaultAsync(x => x.CompanyName == username);
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Username == username);
             if (user == null)
                 return null;
 

@@ -1,4 +1,5 @@
-﻿using GibsLifesMicroWebApi.Contracts.V1;
+﻿using DocumentFormat.OpenXml.InkML;
+using GibsLifesMicroWebApi.Contracts.V1;
 using GibsLifesMicroWebApi.Data;
 using GibsLifesMicroWebApi.Data.Repositories;
 using GibsLifesMicroWebApi.Domain;
@@ -363,77 +364,127 @@ namespace GibsLifesMicroWebApi.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> CreateAgent([FromForm] CreateAgentFormRequest request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.AgentName))
-                return BadRequest("Invalid request.");
-
-            if (request.Files == null || !request.Files.Any())
-                return BadRequest("At least one document is required.");
-
-            //if (request.DocTypes.Count != request.Files.Count)
-            //    return BadRequest("Metadata count must match files count.");
-
-            // Map agent
-            var agent = new Agents
+            try
             {
-                AgentID = _repository.GetNextAutoNumber("AGENTS", "01").ToString(), // Fix: Invoke ToString() method
-                UnitID = request.UnitId,
-                Agent = request.AgentName,
-                Address = request.Address,
-                Area = request.Area,
-                City = request.City,
-                State = request.State,
-                Phone1 = request.Phone1,
-                Phone2 = request.Phone2,
-                FaxNo = request.FaxNo,
-                Email = request.Email,
-                InsPerson = request.InsPerson,
-                FinPerson = request.FinPerson,
-                Balance = request.Balance,
-                CreditLimit = request.CreditLimit,
-                ComRate = request.ComRate,
-                Remark = request.Remark,
-                Accountno = request.AccountNo,
-                Bankname = request.BankName,
-                Tag = request.Tag,
-                Passwords = request.Password,
-                IsVerified = false,
-                Deleted = 0,
-                SubmittedBy = "api",
-                SubmittedOn = DateTime.UtcNow
-            };
+                if (request == null || string.IsNullOrWhiteSpace(request.AgentName))
+                    return BadRequest("Invalid request.");
 
-            // Handle uploaded documents
-            var documents = new List<AttachDoc>();
+                if (request.Files == null || !request.Files.Any())
+                    return BadRequest("At least one document is required.");
 
-            foreach (var file in request.Files)
-            {
-                var fileName = file.FileName;
-                var extension = Path.GetExtension(fileName)?.ToLowerInvariant() ?? ".unknown";
-
-                using var ms = new MemoryStream();
-                await file.CopyToAsync(ms);
-
-                documents.Add(new AttachDoc
+                // ✅ Check for duplicate email
+                if (!string.IsNullOrWhiteSpace(request.Email))
                 {
-                    EntryDate = DateTime.UtcNow,
-                    DocTypes = "AGENCY ONBOARDING",
-                    DocFrom = request.AgentName,
-                    DocDetails = fileName,
-                    zDocuments = ms.ToArray(),
+                    var emailExists = await _db.Agents
+                        .AnyAsync(a => a.Email == request.Email && a.Deleted != 1);
+
+                    if (emailExists)
+                    {
+                        return BadRequest(new
+                        {
+                            message = "An agent with this email already exists.",
+                            field = "Email"
+                        });
+                    }
+
+                    // Optional: Also check in Users table to prevent conflicts
+                    var emailExistsInUsers = await _db.Users
+                        .AnyAsync(u => u.Email == request.Email && u.Active == 1);
+
+                    if (emailExistsInUsers)
+                    {
+                        return BadRequest(new
+                        {
+                            message = "This email is already registered in the system.",
+                            field = "Email"
+                        });
+                    }
+                }
+
+                // Optional: Check for duplicate AgentID if manually provided
+                // (Skip if auto-generated)
+                // if (!string.IsNullOrWhiteSpace(request.AgentID))
+                // {
+                //     var agentIdExists = await _context.Agents
+                //         .AnyAsync(a => a.AgentID == request.AgentID && a.Deleted != 1);
+                //     
+                //     if (agentIdExists)
+                //     {
+                //         return BadRequest(new 
+                //         { 
+                //             message = "An agent with this AgentID already exists.",
+                //             field = "AgentID"
+                //         });
+                //     }
+                // }
+
+                // Map agent
+                var agent = new Agents
+                {
+                    AgentID = _repository.GetNextAutoNumber("AGENTS", "01").ToString(),
+                    UnitID = request.UnitId,
+                    Agent = request.AgentName,
+                    Address = request.Address,
+                    Area = request.Area,
+                    City = request.City,
+                    State = request.State,
+                    Phone1 = request.Phone1,
+                    Phone2 = request.Phone2,
+                    FaxNo = request.FaxNo,
+                    Email = request.Email,
+                    InsPerson = request.InsPerson,
+                    FinPerson = request.FinPerson,
+                    Balance = request.Balance,
+                    CreditLimit = request.CreditLimit,
+                    ComRate = request.ComRate,
+                    Remark = request.Remark,
+                    Accountno = request.AccountNo,
+                    Bankname = request.BankName,
+                    Tag = request.Tag,
+                    Passwords = request.Password, // ⚠️ Consider hashing this password!
+                    IsVerified = false,
                     Deleted = 0,
-                    Active = 1,
-                    OptionType = "AgentDoc",
                     SubmittedBy = "api",
                     SubmittedOn = DateTime.UtcNow
+                };
+
+                // Handle uploaded documents
+                var documents = new List<AttachDoc>();
+                foreach (var file in request.Files)
+                {
+                    var fileName = file.FileName;
+                    var extension = Path.GetExtension(fileName)?.ToLowerInvariant() ?? ".unknown";
+
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+
+                    documents.Add(new AttachDoc
+                    {
+                        EntryDate = DateTime.UtcNow,
+                        DocTypes = "AGENCY ONBOARDING",
+                        DocFrom = request.AgentName,
+                        DocDetails = fileName,
+                        zDocuments = ms.ToArray(),
+                        Deleted = 0,
+                        Active = 1,
+                        OptionType = "AgentDoc",
+                        SubmittedBy = "api",
+                        SubmittedOn = DateTime.UtcNow
+                    });
+                }
+
+                string agentId = await _repository.CreateAgentWithDocumentsAsync(agent, documents);
+
+                return Ok(new
+                {
+                    AgentID = agentId,
+                    Message = "Agent created successfully with documents."
                 });
             }
-            string agentId = await _repository.CreateAgentWithDocumentsAsync(agent, documents);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                AgentID = agentId,
-                Message = "Agent created successfully with documents."
-            });
+                return ExceptionResult(ex);
+            }
         }
 
 

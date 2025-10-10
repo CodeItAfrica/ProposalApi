@@ -7,9 +7,7 @@ using System;
 
 namespace GibsLifesMicroWebApi.Controllers
 {
-#if !DEBUG
-    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "APP,AGENT,CUST")]
-#endif
+
     [Route("api/[controller]")]
     [ApiController]
     public class DashboardController : SecureControllerBase

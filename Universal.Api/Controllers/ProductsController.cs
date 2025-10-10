@@ -11,7 +11,6 @@ using GibsLifesMicroWebApi.Models;
 
 namespace GibsLifesMicroWebApi.Controllers
 {
-    [Authorize(Roles = "APP,AGENT,CUST")]
     public class ProductsController : SecureControllerBase
     {
         public ProductsController(Repository repository, AuthContext authContext) : base(repository, authContext)

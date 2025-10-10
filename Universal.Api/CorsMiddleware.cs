@@ -17,6 +17,11 @@ namespace GibsLifesMicroWebApi
             "https://portalife.newgibsonline.com",
             "https://portaltestlife.newgibsonline.com",
             "http://portaltestlife.newgibsonline.com",
+            "http://172.18.32.1:5173",
+            "http://192.168.56.1:5173",
+            "http://192.168.186.1:5173",
+            "http://192.168.11.1:5173",
+            "http://192.168.242.199:5173"
         };
 
         public CorsMiddleware(RequestDelegate next)
