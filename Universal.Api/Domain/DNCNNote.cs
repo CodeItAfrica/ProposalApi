@@ -64,7 +64,7 @@ namespace GibsLifesMicroWebApi.Models
 
         //public double? VatRate { get; set; }
 
-        //public Decimal? VatAmount { get; set; }
+        public long? VatAmount { get; set; }
 
         public decimal? NetAmount { get; set; }
 
@@ -188,7 +188,7 @@ namespace GibsLifesMicroWebApi.Models
 
 
         //public string Z_NAICOM_UID { get; set; }
-        //public string Z_NAICOM_STATUS { get; set; }
+        public string Z_NAICOM_STATUS { get; set; }
         //public DateTime? Z_NAICOM_SENT_ON { get; set; }
         //public string Z_NAICOM_ERROR { get; set; }
         //public string Z_NAICOM_JSON { get; set; }

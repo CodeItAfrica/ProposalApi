@@ -139,7 +139,45 @@ namespace GibsLifesMicroWebApi.Domain
         public string SubmittedBy { get; set; }
         public DateTime SubmittedOn { get; set; }
     }
+    namespace YourProject.DTOs
+    {
+        public class CreateAttachDocDto
+        {
+            public string? DocNo { get; set; }
+            public string? DocTypes { get; set; }
+            public string? DocFrom { get; set; }
+            public IFormFile? DocumentFile { get; set; }
+            public string? OptionType { get; set; }
+            public string? SubmittedBy { get; set; }
+        }
 
+        public class UpdateAttachDocDto
+        {
+            public string? DocNo { get; set; }
+            public DateTime EntryDate { get; set; }
+            public string? DocTypes { get; set; }
+            public string? DocFrom { get; set; }
+            public string? DocDetails { get; set; }
+            public IFormFile? DocumentFile { get; set; }
+            public byte Active { get; set; }
+            public string? OptionType { get; set; }
+        }
+
+        public class AttachDocResponseDto
+        {
+            public long AttachID { get; set; }
+            public string? DocNo { get; set; }
+            public DateTime EntryDate { get; set; }
+            public string? DocTypes { get; set; }
+            public string? DocFrom { get; set; }
+            public string? DocDetails { get; set; }
+            public int DocumentSize { get; set; }
+            public byte Active { get; set; }
+            public string? OptionType { get; set; }
+            public string? SubmittedBy { get; set; }
+            public DateTime SubmittedOn { get; set; }
+        }
+    }
     public class AttachDocDto
     {
         public string DocType { get; set; }

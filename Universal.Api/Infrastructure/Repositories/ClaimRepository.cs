@@ -49,62 +49,62 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         {
             return await _db.ClaimsReserved.CountAsync();
         }
-        public async Task<Claim> ClaimCreateAsync(CreateNewClaimRequest claimDto)
-        {
-            var policy = await PolicySelectThisAsync(claimDto.PolicyNo);
+        //public async Task<Claim> ClaimCreateAsync(CreateNewClaimRequest claimDto)
+        //{
+        //    var policy = await PolicySelectThisAsync(claimDto.PolicyNo);
 
-            if (policy is null)
-                throw new KeyNotFoundException("Policy No you supplied is invalid");
+        //    if (policy is null)
+        //        throw new KeyNotFoundException("Policy No you supplied is invalid");
 
-            var claim = new Claim
-            {
-                ClaimNo = GetNextAutoNumber("CLAIM", BRANCH_ID, policy.SubRiskID),
-                BranchID = policy.BranchID,
-                PolicyNo = claimDto.PolicyNo,
-                SubRiskID = policy.SubRiskID,
-                SubRisk = policy.SubRiskName,
-                PartyID = policy.PartyID,
-                Party = policy.Party,
-                //refDNCNNo = claimDto.debitNoteNo, //TODO
-                InsuredID = policy.InsuredID,
-                InsuredName = policy.InsFullname,
-                StartDate = policy.StartDate,
-                EndDate = policy.EndDate,
+        //    var claim = new Claim
+        //    {
+        //        ClaimNo = GetNextAutoNumber("CLAIM", BRANCH_ID, policy.SubRiskID),
+        //        BranchID = policy.BranchID,
+        //        PolicyNo = claimDto.PolicyNo,
+        //        SubRiskID = policy.SubRiskID,
+        //        SubRisk = policy.SubRiskName,
+        //        PartyID = policy.PartyID,
+        //        Party = policy.Party,
+        //        //refDNCNNo = claimDto.debitNoteNo, //TODO
+        //        InsuredID = policy.InsuredID,
+        //        InsuredName = policy.InsFullname,
+        //        StartDate = policy.StartDate,
+        //        EndDate = policy.EndDate,
 
-                LossType = claimDto.LossType,
-                LossDate = claimDto.LossDate,
-                LossDetails = claimDto.LossDescription,
-                NotifyDate = claimDto.LossNotifyDate,
+        //        LossType = claimDto.LossType,
+        //        LossDate = claimDto.LossDate,
+        //        LossDetails = claimDto.LossDescription,
+        //        NotifyDate = claimDto.LossNotifyDate,
 
-                PropRate = (decimal?)policy.ProportionRate,
-                UndYear = policy.StartDate.Value.Year,
-                AmtReserved = 1000, //TODO
-                AmtPaid = 0,
+        //        PropRate = (decimal?)policy.ProportionRate,
+        //        UndYear = policy.StartDate.Value.Year,
+        //        AmtReserved = 1000, //TODO
+        //        AmtPaid = 0,
 
-                //vehicle/marine/other info
-                //Field1 = "",
-                //Field2 = "",
-                //Field3 = "",
-                //Field4 = "",
-                //Field5 = "",
-                //Field6 = "",
-                //Field7 = "",
-                //Field8 = "",
-                //Field9 = "",
-                //Field10 = "",
-                //Field11 = "",
-                //Field12 = "",
+        //        //vehicle/marine/other info
+        //        //Field1 = "",
+        //        //Field2 = "",
+        //        //Field3 = "",
+        //        //Field4 = "",
+        //        //Field5 = "",
+        //        //Field6 = "",
+        //        //Field7 = "",
+        //        //Field8 = "",
+        //        //Field9 = "",
+        //        //Field10 = "",
+        //        //Field11 = "",
+        //        //Field12 = "",
 
-                EntryDate = DateTime.Now,
-                SubmittedBy = $"{SUBMITTED_BY}/{_authContext.User.AppId}",
-                SubmittedOn = DateTime.Now,
-                Approval = 0,
-                Active = 1,
-            };
+        //        EntryDate = DateTime.Now,
+        //        SubmittedBy = $"{SUBMITTED_BY}/{_authContext.User.AppId}",
+        //        SubmittedOn = DateTime.Now,
+        //        Approval = 0,
+        //        Active = 1,
+        //    };
 
-            _db.ClaimsReserved.Add(claim);
-            _db.SaveChanges();
-            return claim;
-        }
+        //    _db.ClaimsReserved.Add(claim);
+        //    _db.SaveChanges();
+        //    return claim;
+        //}
     }
 }

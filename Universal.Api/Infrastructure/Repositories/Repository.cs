@@ -1,14 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GibsLifesMicroWebApi.Contracts.V1;
-using GibsLifesMicroWebApi.Models;
+﻿using GibsLifesMicroWebApi.Contracts.V1;
 using GibsLifesMicroWebApi.Domain;
+using GibsLifesMicroWebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GibsLifesMicroWebApi.Data.Repositories
 {
@@ -21,19 +22,21 @@ namespace GibsLifesMicroWebApi.Data.Repositories
         //private const string BRANCH_NAME = "RETAIL OFFICE";
         private const string SUBMITTED_BY = "WEB-API";
         private readonly IConfiguration _config;
+        private readonly ILogger<Repository> _logger;
 
 
-        public Repository(IHttpContextAccessor httpContextAccessor, DataContext db, AuthContext sc, IConfiguration config)
+        public Repository(IHttpContextAccessor httpContextAccessor, DataContext db, AuthContext sc, IConfiguration config, ILogger<Repository> logger)
         {
             _db = db;
             _authContext = sc;
             _httpContextAccessor = httpContextAccessor;
             _config = config;
+            _logger = logger;
 
 
         }
 
-        
+
 
         public async Task<User> AppLogin(string username, string password)
         {

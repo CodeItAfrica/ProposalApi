@@ -1,6 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Gibs.Domain.Entities;
+using Gibs.Domain.Entities.others;
 using GibsLifesMicroWebApi.Domain;
 using GibsLifesMicroWebApi.Models;
+using GibsLifesMicroWebApi.Models.Customer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +27,13 @@ namespace GibsLifesMicroWebApi.Data
         {
 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Beneficiary>(entity =>
+            {
+                entity.HasKey(e => e.TransID);
+                entity.Property(e => e.TransID).UseIdentityColumn();
+                entity.Property(e => e.Deleted).HasDefaultValue((byte)0);
+                entity.Property(e => e.Active).HasDefaultValue((byte)1);
+            });
             modelBuilder.Entity<Agents>()
         .HasKey(a => a.INT);
 
@@ -147,17 +157,27 @@ namespace GibsLifesMicroWebApi.Data
         public DbSet<DNCNNote> DNCNNotes { get; set; }
         public DbSet<PolicyDetail> PolicyDetails { get; set; }
         public DbSet<GrpMember> GrpMembers { get; set; }
+        public DbSet<PasswordReset> PasswordResets { get; set; }
+        public DbSet<ExchangeRate> ExchangeRates { get; set; }
+        public DbSet<MktChannel> MktChannels { get; set; }
+        public DbSet<MktStaff> MktStaffs { get; set; }
 
+        public DbSet<SubRiskSection> SubRiskSections { get; set; }
+        public DbSet<SubRiskSMI> SubRiskSMIs { get; set; }
         public DbSet<InsuredClients> InsuredClients { get; set; }
         public DbSet<PolicyMaster> PolicyMaster { get; set; }
         public DbSet<Agents> Agents { get; set; }
         public DbSet<Unit> Units { get; set; }
+        public DbSet<SalesChannel> SalesChannels { get; set; }
+
+        public DbSet<DNCN> undDNCN { get; set; }
         public DbSet<ProductSettings> ProductSettings { get; set; }
         public DbSet<QuotesMaster> QuotesMaster { get; set; }
         public DbSet<QuoteMember> QuoteMembers { get; set; }
         public DbSet<InterestRate> InterestRate { get; set; }
         public DbSet<AttachDoc> AttachDocs { get; set; }
         public DbSet<UndPremRate> UndPremRates { get; set; }
+        public DbSet<Beneficiary> Beneficiaries { get; set; }
 
 
         public DbSet<AgentAttachment> AgentAttachments { get; set; }

@@ -5,34 +5,37 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GibsLifesMicroWebApi.Domain
 {
-    public class QuotationRequest
-    {
-        public string? QuoteNo { get; set; }
-        //public string? AssuredCode { get; set; }
-        public string? SurName { get; set; }
-        public string? OtherNames { get; set; }
-        public DateTime? QuotationDate { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public string? BranchID { get; set; }
-        public string? MobileNumber { get; set; }
+        public class QuotationRequest
+        {
+            public string? QuoteNo { get; set; }
+            //public string? AssuredCode { get; set; }
+            public string? SurName { get; set; }
+            public string? OtherNames { get; set; }
+            public DateTime? QuotationDate { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public string? BranchID { get; set; }
+            public string? MobileNumber { get; set; }
+            public string? AssuredCode { get; set; }
 
-        public string? Email { get; set; }
-        public long Duration { get; set; }
-        public string? Frequency { get; set; }
-        public decimal? RegularSaving { get; set; }
-        public string? ProductCode { get; set; }
-        public string? AgentCode { get; set; }
-        public string? Product { get; set; }
-        public decimal? ExtraRate { get; set; }
-        public decimal? LoadingRate { get; set; }
-        public string? Status { get; set; }
-    }
+            public string? Email { get; set; }
+            public long Duration { get; set; }
+            public string? Frequency { get; set; }
+            public decimal? RegularSaving { get; set; }
+            public string? ProductCode { get; set; }
+            public string? AgentCode { get; set; }
+            public string? Product { get; set; }
+            public decimal? ExtraRate { get; set; }
+            public decimal? LoadingRate { get; set; }
+            public string? Status { get; set; }
+        }
     public class TraditionalQuotationRequest
     {
         public string? QuoteNo { get; set; }
         //public string? AssuredCode { get; set; }
         public string? SurName { get; set; }
         public string? OtherNames { get; set; }
+        public string? AssuredCode { get; set; }
+
         public string? AgentCode { get; set; }
 
         public DateTime? QuotationDate { get; set; }
@@ -42,6 +45,7 @@ namespace GibsLifesMicroWebApi.Domain
         public string? Email { get; set; }
         public long Duration { get; set; }
         public string? Frequency { get; set; }
+        public string? Remark { get; set; }
         public decimal? RegularSaving { get; set; }
         public string? ProductCode { get; set; }
         public long Age { get; set; }
@@ -61,6 +65,7 @@ namespace GibsLifesMicroWebApi.Domain
         public long Duration { get; set; }
         public double IntRate { get; set; }
         public string Premtype { get; set; }
+        public string Remark { get; set; }
     }
 
     public class QuoteMasterDto
@@ -321,13 +326,17 @@ namespace GibsLifesMicroWebApi.Domain
     public class QuotationResult
     {
         public string? QuoteNo { get; set; }
-
+        public decimal? FirstPremium { get; set; }
         public decimal? AnnualPremium { get; set; }
         public decimal? SumAssured { get; set; }
         public decimal? LifeCover { get; set; }
         public decimal? Loading { get; set; }
         public decimal? ExtraPremium { get; set; }
         public decimal? TotalPremium { get; set; }
+        public decimal? firstpayable { get; set; }
+        public decimal? secondpayable { get; set; }
+        public decimal? thirdpayable { get; set; }
+        public decimal? bonusamount { get; set; }
     }
 
     public class PagedResult<T>
@@ -397,9 +406,9 @@ namespace GibsLifesMicroWebApi.Domain
         public string? Status { get; set; }
         public string? Medical { get; set; }
 
-        public decimal? Premium1 { get; set; } // Annual Premium
-        public decimal? Premium2 { get; set; } // Extra Premium
-        public decimal? Premium3 { get; set; } // Loading
+        public decimal? Premium1 { get; set; } // payable benefit Premium
+        public decimal? Premium2 { get; set; } // payable benefit Premium
+        public decimal? Premium3 { get; set; } // payable
         public double? A1 { get; set; }
         public double? A2 { get; set; }
 
@@ -416,9 +425,9 @@ namespace GibsLifesMicroWebApi.Domain
         public decimal? XMas { get; set; }
         public decimal? ADBSA { get; set; }
 
-        public decimal? BasicPremium { get; set; } // Same as Premium1
+        public decimal? BasicPremium { get; set; } // Same as firstpremium
         public decimal? IntrestRate { get; set; }
-        public decimal? TotalPremium { get; set; }
+        public decimal? TotalPremium { get; set; }//annual premium
 
         public string? TransSTATUS { get; set; }
         public string? TransGUID { get; set; }
@@ -545,6 +554,9 @@ namespace GibsLifesMicroWebApi.Domain
         public DateTime EffectiveDate { get; set; }
         [Required]
         public DateTime ExpiryDate { get; set; }
+        public string? AssuredCode { get; set; }
+        public string? AgentCode { get; set; }
+
         [Required]
         public string InsuredType { get; set; }
         [Required]
@@ -657,7 +669,57 @@ namespace GibsLifesMicroWebApi.Domain
         public decimal? TotalMemberPremium { get; set; }
         public DateTime? HireDate { get; set; }
     }
+    // Add this to Domain models
 
+    public class ComprehensiveQuotationResponseDto
+    {
+        // Basic Information
+        public string QuotationNumber { get; set; }
+        public DateTime TransactionDate { get; set; }
+        public DateTime EffectiveDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
+
+        // Client Information
+        public string InsuredType { get; set; }
+        public string SchemeType { get; set; }
+        public string ClientName { get; set; }
+
+        // Group Life Settings
+        public decimal GroupLifeFactor { get; set; }
+        public decimal GroupFactorAmount { get; set; }
+
+        // Rate Settings
+        public bool UseFixedRate { get; set; }
+        public decimal? FixedRate { get; set; }
+        public bool UseAverageAge { get; set; }
+        public int? AverageAge { get; set; }
+
+        // Adjustments
+        public decimal LoadingRate { get; set; }
+        public decimal ReductionRate { get; set; }
+        public int CoverDays { get; set; }
+
+        // Financial Summary
+        public decimal? TotalSumInsured { get; set; }
+        public decimal? TotalBasicPremium { get; set; }
+        public decimal? TotalExtensionPremiums { get; set; }
+        public decimal? LoadingAmount { get; set; }
+        public decimal? ReductionAmount { get; set; }
+        public decimal? NetPremium { get; set; }
+
+        // Member Details
+        public List<MemberCalculationDto> MemberCalculations { get; set; } = new();
+
+        // Extension Summary
+        public ExtensionSummaryDto ExtensionSummary { get; set; } = new();
+
+        // Audit Information
+        public string Status { get; set; }
+        public string SubmittedBy { get; set; }
+        public DateTime? SubmittedOn { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+    }
     public class ExtensionSummaryDto
     {
         public decimal? TotalPDEPremium { get; set; }

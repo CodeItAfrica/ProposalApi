@@ -18,8 +18,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\IndividualLifeController.cs" />
+    <Compile Remove="Controllers\PoliciesController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\Reports\ProposalTemplate.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\Reports\ProposalTemplate.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="ExcelDataReader" Version="3.9.0" />
     <PackageReference Include="EPPlus" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
@@ -36,6 +53,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.1" />
@@ -44,6 +62,7 @@
     <PackageReference Include="System.ServiceModel.Http" Version="4.8.*" />
     <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.*" />
     <PackageReference Include="System.ServiceModel.Security" Version="4.8.*" />
+    <PackageReference Include="xunit" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup>

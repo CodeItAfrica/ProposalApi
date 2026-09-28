@@ -46,26 +46,26 @@ namespace GibsLifesMicroWebApi.Contracts.V1
 
 
         // ✅ Create a new policy (this updates all related tables)
-        [HttpPost("create")]
-        public async Task<IActionResult> CreatePolicy([FromBody] Policiesdto policyDto)
-        {
-            if (policyDto == null)
-            {
-                return BadRequest("Policy data is required.");
-            }
+        //[HttpPost("create")]
+        //public async Task<IActionResult> CreatePolicy([FromBody] Policiesdto policyDto)
+        //{
+        //    if (policyDto == null)
+        //    {
+        //        return BadRequest("Policy data is required.");
+        //    }
 
-            try
-            {
-                await _repository.CreatePolicyAsync(policyDto);
-                await _repository.SaveChangesAsync();
-                return Ok(new { message = "Policy created successfully." });
-            }
-            catch (Exception ex)
-           {
-                Console.WriteLine($"Error Saving Changes: {ex.InnerException?.Message}");
-                throw;
-            }
-        }
+        //    try
+        //    {
+        //        await _repository.CreatePolicyAsync(policyDto);
+        //        await _repository.SaveChangesAsync();
+        //        return Ok(new { message = "Policy created successfully." });
+        //    }
+        //    catch (Exception ex)
+        //   {
+        //        Console.WriteLine($"Error Saving Changes: {ex.InnerException?.Message}");
+        //        throw;
+        //    }
+        //}
         [HttpPost("create/individual")]
         public async Task<IActionResult> CreatePolicyMaster([FromBody] PolicyModel policyDto)
         {

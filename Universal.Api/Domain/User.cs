@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GibsLifesMicroWebApi.Domain
 {
@@ -17,6 +18,42 @@ namespace GibsLifesMicroWebApi.Domain
         public ICollection<RolePermission>? RolePermissions { get; set; }
     }
 
+    [Table("PasswordResets")]
+    public class PasswordReset
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Email { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string ResetToken { get; set; }
+
+        [Required]
+        public DateTime TokenExpiry { get; set; }
+
+        [Required]
+        [MaxLength(20)]
+        public string UserType { get; set; } // "User", "Agent", or "Customer"
+
+        [MaxLength(50)]
+        public string UserId { get; set; } // Stores UserID, AgentID, or InsuredID
+
+        public bool IsUsed { get; set; } // Track if token has been used
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? UsedAt { get; set; } // When the token was used
+
+        [MaxLength(50)]
+        public string IpAddress { get; set; } // Track IP for security
+
+        [MaxLength(500)]
+        public string UserAgent { get; set; } // Track browser/device
+    }
 
     public class UserRole
     {
@@ -95,6 +132,7 @@ namespace GibsLifesMicroWebApi.Domain
         public DateTime? ModifiedOn { get; set; }
         public ICollection<UserRole>? UserRoles { get; set; }
         public ICollection<UserPermission>? UserPermissions { get; set; }
+
     }
 
 

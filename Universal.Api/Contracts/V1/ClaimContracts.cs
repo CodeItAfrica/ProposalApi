@@ -42,4 +42,18 @@ namespace GibsLifesMicroWebApi.Contracts.V1
         //[Required]
         //public string LossCause { get; set; }
     }
+
+
+    public class ClmReserveSearchRequest
+    {
+        public string ClassOption { get; set; } = "";
+        public string TypeOption { get; set; } = "";
+        public DateTime Date1 { get; set; }
+        public DateTime Date2 { get; set; }
+        public string SearchField { get; set; } = "";
+        public string SearchText { get; set; } = "";
+        // Pagination
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+    }
 }

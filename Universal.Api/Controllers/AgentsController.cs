@@ -405,7 +405,7 @@ namespace GibsLifesMicroWebApi.Controllers
                 // (Skip if auto-generated)
                 // if (!string.IsNullOrWhiteSpace(request.AgentID))
                 // {
-                //     var agentIdExists = await _context.Agents
+                //     var agentIdExists = await _db.Agents
                 //         .AnyAsync(a => a.AgentID == request.AgentID && a.Deleted != 1);
                 //     
                 //     if (agentIdExists)
@@ -520,6 +520,18 @@ namespace GibsLifesMicroWebApi.Controllers
             }
         }
 
+        //[HttpGet("{agentCode}")]
+        //public async Task<IActionResult> GetByCode(string agentCode)
+        //{
+        //    var agent = await _repository.GetAgentByCodeAsync(agentCode);
+        //    return agent == null ? NotFound() : Ok(agent);
+        //}
 
+        //[HttpPost]
+        //public async Task<IActionResult> Create(AgentDto dto)
+        //{
+        //    var result = await _repository.AddAgentAsync(dto);
+        //    return Ok(result);
+        //}
     }
 }
